@@ -1,9 +1,11 @@
 package at.julian.chatbuddyauth.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,9 +14,10 @@ public class Chatroom {
     @Id
     private String id;
     private String name;
-    @DBRef
+    @DBRef(lazy = true)
+    @JsonIgnore
     private Set<User> users;
-    private List<ChatMessage> messages;
+    private List<ChatMessage> messages = new ArrayList<>();
 
     public Chatroom(String id, String name, Set<User> users, List<ChatMessage> messages) {
         this.id = id;

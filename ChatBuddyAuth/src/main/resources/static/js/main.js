@@ -1,6 +1,8 @@
 "use strict";
 
 var usernamePage = document.querySelector("#username-page");
+var chatListPage = document.querySelector("#chatlist-page");
+var chatListPageContainer = document.querySelector("#chatlist-page-container");
 var chatPage = document.querySelector("#chat-page");
 var usernameForm = document.querySelector("#usernameForm");
 var messageForm = document.querySelector("#messageForm");
@@ -10,8 +12,9 @@ var connectingElement = document.querySelector(".connecting");
 
 var stompClient = null;
 var username = null;
-//mycode
 var password = null;
+var chatroomId = null;
+
 
 var colors = [
   "#2196F3",
@@ -53,11 +56,15 @@ function connect(event) {
         })
         .then(data => {
           // Authentication successful
-          const jwtToken = data.token; // Assuming the token is returned in the response
-          localStorage.setItem('jwtToken', jwtToken); // Save JWT token in localStorage
+          const jwtToken = data.token;
+          localStorage.setItem('jwtToken', jwtToken);
 
           let mes = document.getElementById("mes");
-          mes.innerText = "Authentication successful";
+          mes.innerText = "Authentication successful: ";
+
+          usernamePage.classList.add("hidden");
+          chatListPage.classList.remove("hidden");
+          loadChats();
         })
         .catch(error => {
           // Authentication failed
@@ -67,37 +74,148 @@ function connect(event) {
   }
   event.preventDefault();
 }
-/*function connect(event) {
-  username = document.querySelector("#name").value.trim();
-  password = document.querySelector("#password").value;
-  if (username) {
-    //Enter your password
-    if (password == "hello") {
-      usernamePage.classList.add("hidden");
-      chatPage.classList.remove("hidden");
+function loadChats(){
+  fetch('/api/info/user/'+username, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+localStorage.getItem('jwtToken')
+    },
+  })
+      .then(response => {
+        if ( response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      })
+      .then(data => {
+        // Authentication successful
+        var chats = data.chatrooms;
+        chatListPageContainer.innerHTML = ""; // Clear previous list items
 
-      var socket = new SockJS("/websocket");
-      stompClient = Stomp.over(socket);
+        chats.forEach(chat => {
+          // Create a list item for the chat
+          var listItem = document.createElement("li");
 
-      stompClient.connect({}, onConnected, onError);
-    } else {
-      let mes = document.getElementById("mes");
-      mes.innerText = "Wrong password";
+          // Create a span for the chat name
+          var chatNameSpan = document.createElement("span");
+          chatNameSpan.textContent = chat.name;
+
+          // Create a "Load" button for the chat
+          var loadButton = document.createElement("button");
+
+          // Add click event listener to the "Load" button
+          loadButton.addEventListener("click", function() {
+            loadChat(chat.id); // Assuming you have a function to load a chat by its ID
+          });
+
+          // Append the chat name and "Load" button to the list item
+          listItem.appendChild(chatNameSpan);
+          listItem.appendChild(loadButton);
+
+          // Append the list item to the chat list
+          chatListPageContainer.appendChild(listItem);
+        });
+      })
+      .catch(error => {
+
+      });
+}
+function loadChat(id) {
+  usernamePage.classList.add("hidden");
+  chatListPage.classList.add("hidden");
+  chatPage.classList.remove("hidden");
+  chatroomId = id;
+
+  loadHistory();
+
+  var socket = new SockJS("/ws"); // WebSocket connection URL
+  stompClient = Stomp.over(socket);
+  var headers = {
+    "Authorization": "Bearer " + localStorage.getItem("jwtToken")
+  };
+  stompClient.connect(headers, onConnected, onError);
+}
+
+function loadHistory(){
+  fetch('/api/info/chat/'+chatroomId, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": "Bearer " + localStorage.getItem("jwtToken")
     }
-  }
-  event.preventDefault();
-}*/
+  })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Authentication failed');
+        }
+      })
+      .then(data => {
+        console.debug(data)
+        data.messages.forEach(message =>{
+          var messageElement = document.createElement("li");
 
+          if (message.type === "JOIN") {
+            messageElement.classList.add("event-message");
+            message.content = message.username + " joined!";
+          } else if (message.type === "LEAVE") {
+            messageElement.classList.add("event-message");
+            message.content = message.username + " left!";
+          } else {
+            messageElement.classList.add("chat-message");
+
+            var avatarElement = document.createElement("i");
+            var avatarText = document.createTextNode(message.username[0]);
+            avatarElement.appendChild(avatarText);
+            avatarElement.style["background-color"] = getAvatarColor(message.username);
+
+            messageElement.appendChild(avatarElement);
+
+            var usernameElement = document.createElement("span");
+            var usernameText = document.createTextNode(message.username);
+            usernameElement.appendChild(usernameText);
+            messageElement.appendChild(usernameElement);
+            // * update
+            usernameElement.style["color"] = getAvatarColor(message.username);
+            //* update end
+          }
+
+          var textElement = document.createElement("p");
+          var messageText = document.createTextNode(message.content);
+          textElement.appendChild(messageText);
+
+          messageElement.appendChild(textElement);
+          // * update
+          if (message.username === username) {
+            // Add a class to float the message to the right
+            messageElement.classList.add("own-message");
+          } // * update end
+          messageArea.appendChild(messageElement);
+          messageArea.scrollTop = messageArea.scrollHeight;
+        })
+      })
+      .catch(error => {
+        // Authentication failed
+        let mes = document.getElementById("mes");
+        mes.innerText = "Error: " + error.message;
+      });
+}
 function onConnected() {
-  // Subscribe to the Public Topic
-  stompClient.subscribe("/topic/public", onMessageReceived);
+  var headers = {
+    "Authorization": "Bearer " + localStorage.getItem("jwtToken")
+  };
+  stompClient.subscribe("/topic/" + chatroomId, onMessageReceived, headers);
 
-  // Tell your username to the server
-  stompClient.send(
-    "/app/chat.register",
-    {},
-    JSON.stringify({ sender: username, type: "JOIN" })
-  );
+  /*stompClient.send(
+      "/app/chat.register/"+chatroomId,
+      headers,
+      JSON.stringify({ username: username, type: "JOIN" })
+  );*/
 
   connectingElement.classList.add("hidden");
 }
@@ -109,21 +227,21 @@ function onError(error) {
 }
 
 function send(event) {
+  var headers = {
+    "Authorization": "Bearer " + localStorage.getItem("jwtToken")
+  };
   var messageContent = messageInput.value.trim();
-
   if (messageContent && stompClient) {
     var chatMessage = {
-      sender: username,
+      username: username,
       content: messageInput.value,
       type: "CHAT",
     };
-
-    stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+    stompClient.send("/app/chat.send/" + chatroomId, headers, JSON.stringify(chatMessage));
     messageInput.value = "";
   }
   event.preventDefault();
 }
-
 /**
  * Handles the received message and updates the chat interface accordingly.
  * param {Object} payload - The payload containing the message data.
@@ -135,26 +253,26 @@ function onMessageReceived(payload) {
 
   if (message.type === "JOIN") {
     messageElement.classList.add("event-message");
-    message.content = message.sender + " joined!";
+    message.content = message.username + " joined!";
   } else if (message.type === "LEAVE") {
     messageElement.classList.add("event-message");
-    message.content = message.sender + " left!";
+    message.content = message.username + " left!";
   } else {
     messageElement.classList.add("chat-message");
 
     var avatarElement = document.createElement("i");
-    var avatarText = document.createTextNode(message.sender[0]);
+    var avatarText = document.createTextNode(message.username[0]);
     avatarElement.appendChild(avatarText);
-    avatarElement.style["background-color"] = getAvatarColor(message.sender);
+    avatarElement.style["background-color"] = getAvatarColor(message.username);
 
     messageElement.appendChild(avatarElement);
 
     var usernameElement = document.createElement("span");
-    var usernameText = document.createTextNode(message.sender);
+    var usernameText = document.createTextNode(message.username);
     usernameElement.appendChild(usernameText);
     messageElement.appendChild(usernameElement);
     // * update
-    usernameElement.style["color"] = getAvatarColor(message.sender);
+    usernameElement.style["color"] = getAvatarColor(message.username);
     //* update end
   }
 
@@ -164,7 +282,7 @@ function onMessageReceived(payload) {
 
   messageElement.appendChild(textElement);
   // * update
-  if (message.sender === username) {
+  if (message.username === username) {
     // Add a class to float the message to the right
     messageElement.classList.add("own-message");
   } // * update end

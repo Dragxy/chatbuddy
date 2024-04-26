@@ -7,6 +7,9 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class JwtChannelInterceptor implements ChannelInterceptor {
 
@@ -15,7 +18,6 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-
         String jwtToken = extractJwtToken(message);
 
         if (isValidToken(jwtToken)) {
@@ -25,8 +27,17 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
         }
     }
     private String extractJwtToken(Message<?> message) {
-        return (String) message.getHeaders().get("Authorization");
+        Map<String, List<String>> nativeHeaders = (Map<String, List<String>>) message.getHeaders().get("nativeHeaders");
+        if (nativeHeaders != null) {
+            List<String> authorizationHeaderList = nativeHeaders.get("Authorization");
+            if (authorizationHeaderList != null && !authorizationHeaderList.isEmpty()) {
+                String authorizationHeader = authorizationHeaderList.get(0).split(" ")[1];
+                return authorizationHeader;
+            }
+        }
+        return null;
     }
+
 
     private boolean isValidToken(String jwtToken) {
         return jwtUtils.validateJwtToken(jwtToken);

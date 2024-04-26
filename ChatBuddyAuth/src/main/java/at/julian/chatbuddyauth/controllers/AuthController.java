@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import at.julian.chatbuddyauth.models.Chatroom;
 import at.julian.chatbuddyauth.models.ERole;
 import at.julian.chatbuddyauth.models.Role;
 import at.julian.chatbuddyauth.models.User;
@@ -12,6 +13,7 @@ import at.julian.chatbuddyauth.payload.request.LoginRequest;
 import at.julian.chatbuddyauth.payload.request.SignupRequest;
 import at.julian.chatbuddyauth.payload.response.JwtResponse;
 import at.julian.chatbuddyauth.payload.response.MessageResponse;
+import at.julian.chatbuddyauth.repository.ChatRepository;
 import at.julian.chatbuddyauth.repository.RoleRepository;
 import at.julian.chatbuddyauth.repository.UserRepository;
 import at.julian.chatbuddyauth.security.jwt.JwtUtils;
@@ -45,6 +47,8 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    private ChatRepository chatRepository;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -116,6 +120,9 @@ public class AuthController {
             });
         }
 
+        Set<Chatroom> chatrooms = new HashSet<>();
+        chatrooms.add(chatRepository.findByName("private"));
+        user.setChatrooms(chatrooms);
         user.setRoles(roles);
         userRepository.save(user);
 

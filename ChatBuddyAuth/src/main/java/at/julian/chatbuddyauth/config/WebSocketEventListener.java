@@ -27,13 +27,14 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         String chatroomId = (String) headerAccessor.getSessionAttributes().get("chatroomId");
-        if (username != null) {
+        if (username != null && chatroomId != null) {
             log.info("User disconnected: {}", username);
             var chatMessage = ChatMessage.builder()
                     .type(ChatMessage.MessageType.LEAVE)
                     .username(username)
                     .build();
-            messagingTemplate.convertAndSend("/topic/{chatroomId}" + chatroomId, chatMessage); // Send message to chatroom-specific topic
+            String topic = "/topic/" + chatroomId; // Construct topic dynamically
+            messagingTemplate.convertAndSend(topic, chatMessage); // Send message to chatroom-specific topic
         }
     }
 

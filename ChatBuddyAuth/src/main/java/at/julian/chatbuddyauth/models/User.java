@@ -28,10 +28,10 @@ public class User {
     @Size(max = 120)
     private String password;
 
-    @DBRef
+    @DBRef(lazy = true)
     private Set<Role> roles = new HashSet<>();
 
-    @DBRef
+    @DBRef(lazy = true)
     private Set<Chatroom> chatrooms = new HashSet<>();
 
     public User() {

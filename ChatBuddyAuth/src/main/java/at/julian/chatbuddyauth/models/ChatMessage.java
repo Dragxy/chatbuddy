@@ -20,6 +20,11 @@ public class ChatMessage {
     private LocalDateTime publish_time;
     private MessageType type;
 
+    public ChatMessage(String username, MessageType type) {
+        this.username = username;
+        this.type = type;
+    }
+
     /**
      * Enum representing the type of the chat message.
      */
