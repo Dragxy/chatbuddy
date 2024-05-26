@@ -7,6 +7,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +21,15 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         String jwtToken = extractJwtToken(message);
 
-        if (isValidToken(jwtToken)) {
-            return message;
-        } else {
-            throw new AccessDeniedException("Unauthorized access");
+        try{
+            if (isValidToken(jwtToken)) {
+                return message;
+            } else {
+                throw new AccessDeniedException("Unauthorized access");
+            }
+        } catch (AccessDeniedException ex){
+            System.err.println("Access denied!");
+            return null;
         }
     }
     private String extractJwtToken(Message<?> message) {

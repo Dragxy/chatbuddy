@@ -38,6 +38,8 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ChatRepository chatRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -47,8 +49,6 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
-    @Autowired
-    private ChatRepository chatRepository;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -121,12 +121,14 @@ public class AuthController {
         }
 
         Set<Chatroom> chatrooms = new HashSet<>();
-        chatrooms.add(chatRepository.findByName("private"));
+        Chatroom globalChat = chatRepository.findByName("global");
+        globalChat.getUsers().add(user);
+        chatrooms.add(globalChat);
         user.setChatrooms(chatrooms);
         user.setRoles(roles);
         userRepository.save(user);
+        chatRepository.save(globalChat);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 }
-

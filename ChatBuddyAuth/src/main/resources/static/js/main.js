@@ -1,10 +1,11 @@
 "use strict";
+var registrationPage = document.querySelector("#registration-page");
+var loginForm= document.querySelector("#login-page")
+var signupForm= document.querySelector("#signup-page")
+var userPage=document.querySelector("#user-page")
+var chatListContainer = document.querySelector("#chatlist-container");
 
-var usernamePage = document.querySelector("#username-page");
-var chatListPage = document.querySelector("#chatlist-page");
-var chatListPageContainer = document.querySelector("#chatlist-page-container");
 var chatPage = document.querySelector("#chat-page");
-var usernameForm = document.querySelector("#usernameForm");
 var messageForm = document.querySelector("#messageForm");
 var messageInput = document.querySelector("#message");
 var messageArea = document.querySelector("#messageArea");
@@ -35,11 +36,9 @@ var colors = [
   "#d611c6",
 ];
 
-function connect(event) {
-  username = document.querySelector("#name").value.trim();
-  password = document.querySelector("#password").value;
-  if (username) {
-    // Send HTTP POST request to authenticate user
+function signin(event) {
+  username = loginForm.querySelector(".username").value.trim();
+  password = loginForm.querySelector(".password").value;
     fetch('/api/auth/signin', {
       method: 'POST',
       headers: {
@@ -59,20 +58,39 @@ function connect(event) {
           const jwtToken = data.token;
           localStorage.setItem('jwtToken', jwtToken);
 
-          let mes = document.getElementById("mes");
-          mes.innerText = "Authentication successful: ";
-
-          usernamePage.classList.add("hidden");
-          chatListPage.classList.remove("hidden");
+          registrationPage.classList.add("hidden");
+          userPage.classList.remove("hidden");
           loadChats();
         })
         .catch(error => {
-          // Authentication failed
-          let mes = document.getElementById("mes");
-          mes.innerText = "Error: " + error.message;
+          console.log(error.message)
         });
-  }
   event.preventDefault();
+}
+function signup(event) {
+  username = signupForm.querySelector(".username").value.trim();
+  var email = signupForm.querySelector(".email").value.trim();
+  password = signupForm.querySelector(".password").value;
+  fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username: username, email: email, password: password })
+  })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Authentication failed');
+        }
+      })
+      .then(data => {
+        window.location.reload();
+      })
+      .catch(error => {
+        console.log(error.message)
+      });
 }
 function loadChats(){
   fetch('/api/info/user/'+username, {
@@ -94,41 +112,31 @@ function loadChats(){
       .then(data => {
         // Authentication successful
         var chats = data.chatrooms;
-        chatListPageContainer.innerHTML = ""; // Clear previous list items
+        chatListContainer.innerHTML = ""; // Clear previous list items
 
         chats.forEach(chat => {
-          // Create a list item for the chat
-          var listItem = document.createElement("li");
+          const listItem = document.createElement("li");
+          const chatButton = document.createElement("button");
+          chatButton.textContent = chat.name;
 
-          // Create a span for the chat name
-          var chatNameSpan = document.createElement("span");
-          chatNameSpan.textContent = chat.name;
-
-          // Create a "Load" button for the chat
-          var loadButton = document.createElement("button");
-
-          // Add click event listener to the "Load" button
-          loadButton.addEventListener("click", function() {
-            loadChat(chat.id); // Assuming you have a function to load a chat by its ID
+          chatButton.addEventListener("click", function() {
+            chatroomId = chat.id;
+            var chatnameform = chatPage.querySelector("#chatname")
+            chatnameform.textContent=chat.name;
+            loadChat();
           });
 
-          // Append the chat name and "Load" button to the list item
-          listItem.appendChild(chatNameSpan);
-          listItem.appendChild(loadButton);
-
-          // Append the list item to the chat list
-          chatListPageContainer.appendChild(listItem);
+          listItem.appendChild(chatButton);
+          chatListContainer.appendChild(listItem);
         });
       })
       .catch(error => {
 
       });
 }
-function loadChat(id) {
-  usernamePage.classList.add("hidden");
-  chatListPage.classList.add("hidden");
+function loadChat() {
+  userPage.classList.add("hidden");
   chatPage.classList.remove("hidden");
-  chatroomId = id;
 
   loadHistory();
 
@@ -140,6 +148,32 @@ function loadChat(id) {
   stompClient.connect(headers, onConnected, onError);
 }
 
+function createChat(chatname){
+  const requestBody = {
+    chatName: chatname,
+    username: username
+  };
+
+  fetch('/api/info/chats/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')
+    },
+    body: JSON.stringify(requestBody)
+  })
+      .then(response => {
+        if (response.ok) {
+          loadChats()
+          return response.json();
+        } else {
+          throw new Error('Authentication failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+}
 function loadHistory(){
   fetch('/api/info/chat/'+chatroomId, {
     method: 'GET',
@@ -156,7 +190,6 @@ function loadHistory(){
         }
       })
       .then(data => {
-        console.debug(data)
         data.messages.forEach(message =>{
           var messageElement = document.createElement("li");
 
@@ -242,10 +275,7 @@ function send(event) {
   }
   event.preventDefault();
 }
-/**
- * Handles the received message and updates the chat interface accordingly.
- * param {Object} payload - The payload containing the message data.
- */
+
 function onMessageReceived(payload) {
   var message = JSON.parse(payload.body);
 
@@ -265,12 +295,10 @@ function onMessageReceived(payload) {
     avatarElement.appendChild(avatarText);
     avatarElement.style["background-color"] = getAvatarColor(message.username);
 
-    messageElement.appendChild(avatarElement);
-
     var usernameElement = document.createElement("span");
     var usernameText = document.createTextNode(message.username);
     usernameElement.appendChild(usernameText);
-    messageElement.appendChild(usernameElement);
+
     // * update
     usernameElement.style["color"] = getAvatarColor(message.username);
     //* update end
@@ -280,13 +308,17 @@ function onMessageReceived(payload) {
   var messageText = document.createTextNode(message.content);
   textElement.appendChild(messageText);
 
-  messageElement.appendChild(textElement);
+
   // * update
   if (message.username === username) {
     // Add a class to float the message to the right
     messageElement.classList.add("own-message");
-  } // * update end
+  }
+    messageElement.appendChild(avatarElement);
+    messageElement.appendChild(usernameElement);
+    messageElement.appendChild(textElement);
   messageArea.appendChild(messageElement);
+
   messageArea.scrollTop = messageArea.scrollHeight;
 }
 
@@ -300,5 +332,36 @@ function getAvatarColor(messageSender) {
   return colors[index];
 }
 
-usernameForm.addEventListener("submit", connect, true);
 messageForm.addEventListener("submit", send, true);
+loginForm.addEventListener("submit", signin, true);
+signupForm.addEventListener("submit", signup, true);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const createChatButton = document.getElementById('createChatButton');
+  const dialog = document.getElementById('dialog');
+  const closeButton = document.getElementById('closeButton');
+  const chatForm = document.getElementById('chatForm');
+
+  createChatButton.addEventListener('click', () => {
+    dialog.style.display = 'flex';
+  });
+
+  closeButton.addEventListener('click', () => {
+    dialog.style.display = 'none';
+  });
+
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const chatName = document.getElementById('chatNameToCreate').value;
+    alert(`Chat created with name: ${chatName}`);
+    dialog.style.display = 'none';
+    chatForm.reset();
+    createChat(chatName)
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target == dialog) {
+      dialog.style.display = 'none';
+    }
+  });
+});

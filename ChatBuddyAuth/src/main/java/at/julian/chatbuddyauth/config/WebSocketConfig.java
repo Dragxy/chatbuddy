@@ -9,9 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.socket.config.annotation.*;
 
-/**
- * Configuration class for WebSocket messaging in the application.
- */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {

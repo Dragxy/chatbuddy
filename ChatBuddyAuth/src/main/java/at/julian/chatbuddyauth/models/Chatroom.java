@@ -1,14 +1,17 @@
 package at.julian.chatbuddyauth.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+@NoArgsConstructor
 @Document(collection = "chatrooms")
 public class Chatroom {
     @Id
@@ -24,6 +27,12 @@ public class Chatroom {
         this.name = name;
         this.users = users;
         this.messages = messages;
+    }
+
+    public Chatroom(String name) {
+        this.name = name;
+        users = new HashSet<>();
+        messages=new ArrayList<>();
     }
 
     public String getId() {
