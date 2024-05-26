@@ -1,14 +1,12 @@
 package at.julian.chatbuddyauth.controllers;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import at.julian.chatbuddyauth.models.Chatroom;
-import at.julian.chatbuddyauth.models.ERole;
-import at.julian.chatbuddyauth.models.Role;
-import at.julian.chatbuddyauth.models.User;
+import at.julian.chatbuddyauth.models.*;
 import at.julian.chatbuddyauth.payload.request.LoginRequest;
 import at.julian.chatbuddyauth.payload.request.SignupRequest;
 import at.julian.chatbuddyauth.payload.response.JwtResponse;
@@ -22,6 +20,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,6 +48,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -129,6 +131,8 @@ public class AuthController {
         userRepository.save(user);
         chatRepository.save(globalChat);
 
+        ChatMessage joinMessage = new ChatMessage(ChatMessage.MessageType.JOIN, LocalDateTime.now(), user.getUsername());
+        messagingTemplate.convertAndSend("/topic/" + globalChat.getId(), joinMessage);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 }

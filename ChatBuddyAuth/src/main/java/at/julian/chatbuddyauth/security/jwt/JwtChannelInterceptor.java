@@ -20,7 +20,6 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         String jwtToken = extractJwtToken(message);
-
         try{
             if (isValidToken(jwtToken)) {
                 return message;

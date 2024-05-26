@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Builder
 public class ChatMessage {
     private String content;
-    private String userId;
     private String username;
     private LocalDateTime publish_time;
     private MessageType type;
@@ -23,6 +22,12 @@ public class ChatMessage {
     public ChatMessage(String username, MessageType type) {
         this.username = username;
         this.type = type;
+    }
+
+    public ChatMessage(MessageType type, LocalDateTime publish_time, String username) {
+        this.type = type;
+        this.publish_time = publish_time;
+        this.username = username;
     }
 
     /**

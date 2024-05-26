@@ -3,6 +3,7 @@ package at.julian.chatbuddyauth.config;
 import at.julian.chatbuddyauth.models.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -19,8 +20,8 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @Slf4j
 @RequiredArgsConstructor
 public class WebSocketEventListener {
-
-    private final SimpMessageSendingOperations messagingTemplate;
+    @Autowired
+    private SimpMessageSendingOperations messagingTemplate;
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {

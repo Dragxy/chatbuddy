@@ -5,6 +5,7 @@ import at.julian.chatbuddyauth.models.ERole;
 import at.julian.chatbuddyauth.models.Role;
 import at.julian.chatbuddyauth.repository.ChatRepository;
 import at.julian.chatbuddyauth.repository.RoleRepository;
+import at.julian.chatbuddyauth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -17,6 +18,8 @@ public class DataInitilizer {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired

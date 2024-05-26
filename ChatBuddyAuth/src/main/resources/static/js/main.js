@@ -147,7 +147,29 @@ function loadChat() {
   };
   stompClient.connect(headers, onConnected, onError);
 }
-
+function inviteUser(username){
+  const requestBody = {
+    username: username
+  };
+  fetch('/api/info/inviteUser/'+chatroomId, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')
+    },
+    body: JSON.stringify(requestBody)
+  })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Authentication failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+}
 function createChat(chatname){
   const requestBody = {
     chatName: chatname,
@@ -278,7 +300,6 @@ function send(event) {
 
 function onMessageReceived(payload) {
   var message = JSON.parse(payload.body);
-
   var messageElement = document.createElement("li");
 
   if (message.type === "JOIN") {
@@ -298,7 +319,8 @@ function onMessageReceived(payload) {
     var usernameElement = document.createElement("span");
     var usernameText = document.createTextNode(message.username);
     usernameElement.appendChild(usernameText);
-
+    messageElement.appendChild(avatarElement);
+    messageElement.appendChild(usernameElement);
     // * update
     usernameElement.style["color"] = getAvatarColor(message.username);
     //* update end
@@ -314,11 +336,9 @@ function onMessageReceived(payload) {
     // Add a class to float the message to the right
     messageElement.classList.add("own-message");
   }
-    messageElement.appendChild(avatarElement);
-    messageElement.appendChild(usernameElement);
+
     messageElement.appendChild(textElement);
   messageArea.appendChild(messageElement);
-
   messageArea.scrollTop = messageArea.scrollHeight;
 }
 
@@ -338,30 +358,73 @@ signupForm.addEventListener("submit", signup, true);
 
 document.addEventListener('DOMContentLoaded', () => {
   const createChatButton = document.getElementById('createChatButton');
-  const dialog = document.getElementById('dialog');
-  const closeButton = document.getElementById('closeButton');
+  const chatDialog = document.getElementById('chatDialog');
+  const chatCloseButton = document.getElementById('chatCloseButton');
   const chatForm = document.getElementById('chatForm');
 
   createChatButton.addEventListener('click', () => {
-    dialog.style.display = 'flex';
+    chatDialog.style.display = 'flex';
   });
 
-  closeButton.addEventListener('click', () => {
-    dialog.style.display = 'none';
+  chatCloseButton.addEventListener('click', () => {
+    chatDialog.style.display = 'none';
   });
 
   chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const chatName = document.getElementById('chatNameToCreate').value;
-    alert(`Chat created with name: ${chatName}`);
-    dialog.style.display = 'none';
+    chatDialog.style.display = 'none';
     chatForm.reset();
     createChat(chatName)
   });
 
   window.addEventListener('click', (e) => {
-    if (e.target == dialog) {
-      dialog.style.display = 'none';
+    if (e.target == chatDialog) {
+      chatDialog.style.display = 'none';
+    }
+  });
+
+  const inviteUserButton = document.getElementById('inviteUserButton');
+  const inviteDialog = document.getElementById('inviteDialog');
+  const inviteCloseButton = document.getElementById('inviteCloseButton');
+  const inviteForm = document.getElementById('inviteForm');
+
+  inviteUserButton.addEventListener('click', () => {
+    inviteDialog.style.display = 'flex';
+  });
+
+  inviteCloseButton.addEventListener('click', () => {
+   inviteDialog.style.display = 'none';
+  });
+
+  inviteForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = document.getElementById('autocomplete-input').value;
+    inviteUser(username)
+    inviteDialog.style.display = 'none';
+    inviteForm.reset();
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target == inviteDialog) {
+      inviteDialog.style.display = 'none';
+    }
+  });
+
+  $('#autocomplete-input').devbridgeAutocomplete({
+    serviceUrl: '/suggestion',
+    paramName: 'searchstr',
+    params: {
+      get chattarget() {
+        return chatroomId;
+      }
+    },
+    minChars: 1,
+    autoSelectFirst: true,
+    beforeAjaxRequest: function (input, ajaxSettings) {
+      ajaxSettings.headers = {
+        'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')
+      };
     }
   });
 });

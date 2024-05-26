@@ -362,7 +362,28 @@ li span {
     float: left;
     margin-left: 20px;
 }
-#dialog {
+#inviteUserButton{
+    width: 150px;
+    height: 40px;
+    float: left;
+    margin-left: 20px;
+    margin-top: -5px;
+}
+#inviteForm{
+    display: flex;
+    align-items: center;
+}
+#autocomplete-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+#inviteForm .btn {
+    width: 20%;
+    height: 50px;
+    margin: 10px;
+}
+.dialog {
     display: none;
     position: fixed;
     z-index: 11;
@@ -374,7 +395,7 @@ li span {
     justify-content: center;
     align-items: center;
 }
-#dialog label{
+.dialog label{
     color: #573b8a;
     font-size: 1.5em;
     margin: 20px 0;
@@ -389,6 +410,10 @@ li span {
     width: 350px;
     position: relative;
     text-align: center;
+}
+#inviteDialog .dialog-content{
+    height: 25%;
+    width: 450px;
 }
 
 .close-button {

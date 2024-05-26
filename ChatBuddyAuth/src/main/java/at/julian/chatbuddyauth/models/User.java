@@ -42,6 +42,17 @@ public class User {
         this.email = email;
         this.password = password;
     }
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof User toCompare){
+            return this.id.equals(toCompare.id);
+        }
+        return false;
+    }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
     public String getId() {
         return id;

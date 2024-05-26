@@ -6,6 +6,8 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
   />
   <title>Chat App | Spring Boot + WebSocket</title>
+  <!--<link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection"/>-->
+
   <link rel="stylesheet" href="/css/main.css" />
   <link
           rel="stylesheet"
@@ -14,6 +16,7 @@
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
   />
+
 </head>
 <body
 
@@ -50,9 +53,9 @@
 <div id="user-page" class="hidden" >
   <div>
     <button id="createChatButton">Create New Chat</button>
-    <div id="dialog" class="dialog">
+    <div id="chatDialog" class="dialog">
       <div class="dialog-content">
-        <span class="close-button" id="closeButton">&times;</span>
+        <span class="close-button" id="chatCloseButton">&times;</span>
         <h2>Create New Chat</h2>
         <form id="chatForm">
           <label for="chatNameToCreate">Chat Name:</label>
@@ -74,6 +77,21 @@
 
 <div id="chat-page" class="hidden">
   <div class="chat-container">
+    <div>
+      <button id="inviteUserButton">Invite User to Chat</button>
+      <div id="inviteDialog" class="dialog">
+        <div class="dialog-content">
+          <span class="close-button" id="inviteCloseButton">&times;</span>
+          <h2>Invite User to Chat</h2>
+          <form id="inviteForm">
+              <input type="text" id="autocomplete-input" class="autocomplete">
+            <button type="submit" class="btn">
+              <i class="fa-solid fa-paper-plane"></i> Invite
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
     <div class="chat-header">
       <h2 id="chatname">Group Chat</h2>
     </div>
@@ -109,13 +127,15 @@
     </form>
   </div>
 </div>
+<!-- JQuery -->
+<script type="text/javascript" src="/js/jquery-3.2.0.min.js"></script>
+<!--Import https://www.devbridge.com/sourcery/components/jquery-autocomplete/#-->
+<script type="text/javascript" src="/js/jquery.autocomplete.js"></script>
+<!-- Compiled and minified JavaScript -->
+<script type="text/javascript" src="/js/materialize.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="/js/main.js"></script>
-<script type="text/javascript">
-  window.onbeforeunload = function () {
-    return "Dude, are you sure you want to leave? Think of the kittens!";
-  };
-</script>
 </body>
 </html>
