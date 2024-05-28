@@ -5,6 +5,7 @@ import at.julian.chatbuddyauth.models.Chatroom;
 import at.julian.chatbuddyauth.models.User;
 import at.julian.chatbuddyauth.payload.request.CreateChatRequest;
 import at.julian.chatbuddyauth.payload.request.InviteUserRequest;
+import at.julian.chatbuddyauth.payload.request.LeaveChatRequest;
 import at.julian.chatbuddyauth.payload.response.MessageResponse;
 import at.julian.chatbuddyauth.repository.ChatRepository;
 import at.julian.chatbuddyauth.repository.UserRepository;
@@ -63,7 +64,7 @@ public class InfoController {
         if(!chatroom.getUsers().contains(user)){
             chatroom.getUsers().add(user);
             user.getChatrooms().add(chatroom);
-            chatroom.getMessages().add(new ChatMessage(ChatMessage.MessageType.JOIN, LocalDateTime.now(), user.getUsername()));
+            //chatroom.getMessages().add(new ChatMessage(ChatMessage.MessageType.JOIN, LocalDateTime.now(), user.getUsername()));
             chatRepository.save(chatroom);
             userRepository.save(user);
 
@@ -72,6 +73,25 @@ public class InfoController {
             return new MessageResponse("User was successfully added to chatroom!");
         }
         return new MessageResponse("User is already in chatroom!");
+    }
+
+    @PutMapping("/leaveChat/{chatroomId}")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public MessageResponse leaveChat (@PathVariable String chatroomId, @RequestBody LeaveChatRequest r) {
+        User user=userRepository.findByUsername(r.getUsername()).get();
+        Chatroom chatroom = chatRepository.findById(chatroomId).get();
+        if(chatroom.getUsers().contains(user)){
+            chatroom.getUsers().remove(user);
+            user.getChatrooms().remove(chatroom);
+            chatroom.getMessages().add(new ChatMessage(ChatMessage.MessageType.LEAVE, LocalDateTime.now(), user.getUsername()));
+            chatRepository.save(chatroom);
+            userRepository.save(user);
+
+            ChatMessage leaveMessage = new ChatMessage(ChatMessage.MessageType.LEAVE, LocalDateTime.now(), user.getUsername());
+            messagingTemplate.convertAndSend("/topic/" + chatroom.getId(), leaveMessage);
+            return new MessageResponse("User was successfully removed from chatroom!");
+        }
+        return new MessageResponse("User is not in chatroom!");
     }
 }
 

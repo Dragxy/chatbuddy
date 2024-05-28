@@ -47,6 +47,19 @@ public class Chatroom {
         return users;
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Chatroom toCompare){
+            return this.id.equals(toCompare.id);
+        }
+        return false;
+    }
+    @Override
+    public int hashCode() {
+        if(id==null) return 0;
+        return id.hashCode();
+    }
+
     public void setUsers(Set<User> users) {
         this.users = users;
     }

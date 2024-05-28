@@ -11,7 +11,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: auto; /* Allow scrolling if needed */
+    overflow-y: hidden;
 }
 body:before {
     height: 50%;
@@ -353,6 +353,8 @@ li span {
     right: 0;
     margin: 0 auto;
     margin-top: -160px;
+    overflow-y: auto;
+    height: 400px;
 }
 
 /*NEW*/
@@ -368,6 +370,22 @@ li span {
     float: left;
     margin-left: 20px;
     margin-top: -5px;
+}
+#returnUserPageButton{
+    width: 150px;
+    height: 40px;
+    float: right;
+    margin-left: 20px;
+    margin-top: -5px;
+}
+
+#leaveChatButton{
+    width: 150px;
+    height: 40px;
+    float: right;
+    margin-left: 20px;
+    margin-top: -5px;
+    background: firebrick;
 }
 #inviteForm{
     display: flex;

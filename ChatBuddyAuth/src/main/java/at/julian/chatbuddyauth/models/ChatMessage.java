@@ -30,9 +30,6 @@ public class ChatMessage {
         this.username = username;
     }
 
-    /**
-     * Enum representing the type of the chat message.
-     */
     public enum MessageType {
         CHAT, LEAVE, JOIN
     }

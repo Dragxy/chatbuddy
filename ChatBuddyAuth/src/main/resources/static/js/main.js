@@ -170,6 +170,30 @@ function inviteUser(username){
         console.error('Error:', error);
       });
 }
+function leaveChat(username){
+  const requestBody = {
+    username: username
+  };
+  fetch('/api/info/leaveChat/'+chatroomId, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')
+    },
+    body: JSON.stringify(requestBody)
+  })
+      .then(response => {
+        if (response.ok) {
+          loadChats()
+          return response.json();
+        } else {
+          throw new Error('Authentication failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+}
 function createChat(chatname){
   const requestBody = {
     chatName: chatname,
@@ -212,6 +236,8 @@ function loadHistory(){
         }
       })
       .then(data => {
+        //clear messageArea
+        messageArea.innerHTML=""
         data.messages.forEach(message =>{
           var messageElement = document.createElement("li");
 
@@ -274,23 +300,24 @@ function onConnected() {
 
   connectingElement.classList.add("hidden");
 }
-
 function onError(error) {
   connectingElement.textContent =
     "Could not connect to WebSocket! Please refresh the page and try again or contact your administrator.";
   connectingElement.style.color = "red";
 }
-
 function send(event) {
   var headers = {
     "Authorization": "Bearer " + localStorage.getItem("jwtToken")
   };
   var messageContent = messageInput.value.trim();
   if (messageContent && stompClient) {
+    const now = new Date();
+    const formattedDateTime = now.toISOString().slice(0, 19);
     var chatMessage = {
       username: username,
       content: messageInput.value,
       type: "CHAT",
+      publish_time: formattedDateTime,
     };
     stompClient.send("/app/chat.send/" + chatroomId, headers, JSON.stringify(chatMessage));
     messageInput.value = "";
@@ -337,7 +364,7 @@ function onMessageReceived(payload) {
     messageElement.classList.add("own-message");
   }
 
-    messageElement.appendChild(textElement);
+  messageElement.appendChild(textElement);
   messageArea.appendChild(messageElement);
   messageArea.scrollTop = messageArea.scrollHeight;
 }
@@ -426,5 +453,25 @@ document.addEventListener('DOMContentLoaded', () => {
         'Authorization': 'Bearer ' + localStorage.getItem('jwtToken')
       };
     }
+  });
+  const returnUserPageButton = document.getElementById("returnUserPageButton")
+  returnUserPageButton.addEventListener('click', (e) => {
+    if (stompClient !== null) {
+      stompClient.disconnect();
+    }
+    chatPage.classList.add("hidden");
+    userPage.classList.remove("hidden");
+    chatroomId=null
+  });
+  const leaveChatButton = document.getElementById("leaveChatButton")
+  leaveChatButton.addEventListener('click', (e) => {
+    if (stompClient !== null) {
+      stompClient.disconnect();
+    }
+    chatPage.classList.add("hidden");
+    userPage.classList.remove("hidden");
+    leaveChat(username)
+    chatroomId=null
+
   });
 });
