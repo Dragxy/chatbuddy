@@ -3,6 +3,7 @@ package at.julian.chatbuddyauth.security.jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        if (isDisconnectMessage(message)) {
+            System.out.println("Client disconnected");
+            return null;
+        }
         String jwtToken = extractJwtToken(message);
         try{
             if (isValidToken(jwtToken)) {
@@ -43,8 +48,20 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
         return null;
     }
 
-
     private boolean isValidToken(String jwtToken) {
         return jwtUtils.validateJwtToken(jwtToken);
+    }
+
+    private boolean isDisconnectMessage(Message<?> message) {
+        MessageHeaders headers = message.getHeaders();
+        Object simpMessageType = headers.get("simpMessageType");
+        if (simpMessageType != null && simpMessageType.toString().equals("DISCONNECT")) {
+            return true;
+        }
+        Object stompCommand = headers.get("stompCommand");
+        if (stompCommand != null && stompCommand.toString().equals("DISCONNECT")) {
+            return true;
+        }
+        return false;
     }
 }

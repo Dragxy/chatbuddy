@@ -24,7 +24,6 @@ public class AutocompleteController {
     @RequestMapping(value = "/suggestion", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public SuggestionWrapper autocompleteSuggestions(@RequestParam("searchstr") String searchstr, @RequestParam("chattarget") String chattarget, Locale locale, Model model) {
-        //System.out.println("searchstr: " + searchstr);
         List<String> suggestions = new ArrayList<>();
         Chatroom chatroom = chatRepository.findById(chattarget).get();
         for(User user : userRepository.findAll()) {
@@ -34,7 +33,7 @@ public class AutocompleteController {
                     }
                 }
         }
-        int n = suggestions.size() > 20 ? 20 : suggestions.size();
+        int n = suggestions.size() > 7 ? 7 : suggestions.size();
         List<String> sulb = new ArrayList<>(suggestions.subList(0, n));
         return new SuggestionWrapper(sulb);
     }

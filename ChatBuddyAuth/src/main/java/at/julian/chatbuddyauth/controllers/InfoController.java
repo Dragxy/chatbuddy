@@ -48,6 +48,7 @@ public class InfoController {
         User user = userRepository.findByUsername(createChatRequest.getUsername()).get();
         chatroom.getUsers().add(user);
         user.getChatrooms().add(chatroom);
+        chatroom.getMessages().add(new ChatMessage(ChatMessage.MessageType.JOIN, LocalDateTime.now(), user.getUsername()));
         chatRepository.save(chatroom);
         userRepository.save(user);
 
@@ -64,7 +65,7 @@ public class InfoController {
         if(!chatroom.getUsers().contains(user)){
             chatroom.getUsers().add(user);
             user.getChatrooms().add(chatroom);
-            //chatroom.getMessages().add(new ChatMessage(ChatMessage.MessageType.JOIN, LocalDateTime.now(), user.getUsername()));
+            chatroom.getMessages().add(new ChatMessage(ChatMessage.MessageType.JOIN, LocalDateTime.now(), user.getUsername()));
             chatRepository.save(chatroom);
             userRepository.save(user);
 

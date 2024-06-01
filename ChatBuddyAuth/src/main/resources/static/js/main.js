@@ -292,12 +292,6 @@ function onConnected() {
   };
   stompClient.subscribe("/topic/" + chatroomId, onMessageReceived, headers);
 
-  /*stompClient.send(
-      "/app/chat.register/"+chatroomId,
-      headers,
-      JSON.stringify({ username: username, type: "JOIN" })
-  );*/
-
   connectingElement.classList.add("hidden");
 }
 function onError(error) {
@@ -461,6 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     chatPage.classList.add("hidden");
     userPage.classList.remove("hidden");
+    loadChats();
     chatroomId=null
   });
   const leaveChatButton = document.getElementById("leaveChatButton")
