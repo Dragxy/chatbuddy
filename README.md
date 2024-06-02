@@ -70,7 +70,7 @@ To use ChatBuddy, you must first set up a local MongoDB database server or confi
 
   
 
-After setting up the database server, you can run the ChatBuddy application. It should immediately connect to the database server and create the `chatbuddy` database, along with the default collection of users and the default global chat. If this does not happen, check the application's permissions. If issues persist, create the necessary collections manually. (Default data can be found in the `DataInitializer` class.)
+After setting up the database server, you can run the ChatBuddy application. It should immediately connect to the database server and create the `chatbuddy` database, along with the default collection of users and the default global chat. If this does not happen, check the application"s permissions. If issues persist, create the necessary collections manually. (Default data can be found in the `DataInitializer` class.)
 
   
 
@@ -193,16 +193,16 @@ end
 ##### Headers:
   ```json
 {
-	'Content-Type': 'application/json'
+	"Content-Type": "application/json"
 }
   ```
 
 ##### Body:
   ```json
 {
-	'username': "Tyrion",
-	'email': 'tyrion.lannister@got.com',
-	'password': "Lannister"
+	"username": "Tyrion",
+	"email": "tyrion.lannister@got.com",
+	"password": "Lannister"
 }
   ```
 ##### Return Value:
@@ -244,15 +244,15 @@ end
 ##### Headers:
   ```json
 {
-	'Content-Type': 'application/json'
+	"Content-Type": "application/json"
 }
   ```
 
 ##### Body:
   ```json
 {
-	'username': "Tyrion",
-	'password': "Lannister"
+	"username": "Tyrion",
+	"password": "Lannister"
 }
   ```
 ##### Return Value:
@@ -300,8 +300,8 @@ end
 ##### Headers:
   ```json
 {
-	'Content-Type': 'application/json',
-	'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs'
+	"Content-Type": "application/json",
+	"Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs"
 }
   ```
 
@@ -358,8 +358,8 @@ end
 ##### Headers:
   ```json
 {
-	'Content-Type': 'application/json',
-	'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs'
+	"Content-Type": "application/json",
+	"Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs"
 }
   ```
 
@@ -479,7 +479,7 @@ end
 ##### Headers:
   ```json
 {
-	'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs'
+	"Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs"
 }
   ```
 
@@ -516,11 +516,11 @@ On selection of a chat the client tries to establish a websocket connection to t
 During development, many changes and different ideas were experimented with. Initially, Kafka was tried, but that idea was scrapped as the project did not need to be scaled to that extent, and it would have required unnecessary research. Therefore, it defaulted back to a simple WebSocket broker of Spring Boot. Furthermore, if there had been more time, an Angular web server would have been implemented instead of the basic HTML/CSS one. Despite the limited timeframe and resources, the development process was a valuable learning experience. The most important features were successfully implemented, and the application has a solid foundation to be built upon. Future improvements could include enhancing the user interface, adding more advanced features, and optimizing performance to handle a larger user base. The project demonstrates the potential of combining different technologies to create a functional and efficient chat application.
 
 ## Choice of Technologies
-The technologies and programming languages used in this project were chosen based on the developer's experience, as well as their usefulness and functionality to satisfy the assignment as efficiently as possible. Spring Boot was selected for the backend because it provides a simple REST API, easy database integration, and an integrated web server for a simple HTML webpage. MongoDB was used as the database server because it is document-oriented, making it easy to expand and experiment with, and the performance of a relational database model was not required. WPF was chosen as the second frontend as part of the given specifications.
+The technologies and programming languages used in this project were chosen based on the developer"s experience, as well as their usefulness and functionality to satisfy the assignment as efficiently as possible. Spring Boot was selected for the backend because it provides a simple REST API, easy database integration, and an integrated web server for a simple HTML webpage. MongoDB was used as the database server because it is document-oriented, making it easy to expand and experiment with, and the performance of a relational database model was not required. WPF was chosen as the second frontend as part of the given specifications.
 
 ## My Motivation
 
-This application was developed as part of a school project. The primary goal was to satisfy all the requirements of the assignment. Therefore, it should be treated as such. There is a lot to improve and expand, yet there was a limited amount of time. With the assignment due, there will most likely be no further development on this project. The goal was never to replace any of the established chat services out there, but to provide educational insight into the technologies used and how to implement them. And if it helped any other programmer out there, you're most welcome ; ).
+This application was developed as part of a school project. The primary goal was to satisfy all the requirements of the assignment. Therefore, it should be treated as such. There is a lot to improve and expand, yet there was a limited amount of time. With the assignment due, there will most likely be no further development on this project. The goal was never to replace any of the established chat services out there, but to provide educational insight into the technologies used and how to implement them. And if it helped any other programmer out there, you"re most welcome ; ).
 
 # Ressources
 
