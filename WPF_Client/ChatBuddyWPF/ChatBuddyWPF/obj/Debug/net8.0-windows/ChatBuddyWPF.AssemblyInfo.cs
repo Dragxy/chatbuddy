@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChatBuddyWPF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a72d8a786c87502f080a2dccaff4bdd8c3e0178")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c1f8d4304a6452d70aaade355c5f46788fbfc75")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChatBuddyWPF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChatBuddyWPF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

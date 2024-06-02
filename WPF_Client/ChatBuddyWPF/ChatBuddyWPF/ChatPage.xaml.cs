@@ -154,7 +154,7 @@ namespace ChatBuddyWPF
                 HttpClient httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer" , MainWindow.JwtToken);
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+                
                 var requestBody = new { username = MainWindow.Username };
                 var jsonRequestBody = JsonSerializer.Serialize(requestBody);
                 var httpContent = new StringContent(jsonRequestBody , Encoding.UTF8 , "application/json");
