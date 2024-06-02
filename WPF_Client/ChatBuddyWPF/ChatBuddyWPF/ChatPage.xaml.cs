@@ -23,36 +23,34 @@ namespace ChatBuddyWPF
     public partial class ChatPage : Page
     {
         private ObservableCollection<ChatMessageDisplay> chatMessages = new ObservableCollection<ChatMessageDisplay>();
-        IStompClient _broker;
+        IStompClient _client;
 
         public ChatPage(string chatname)
         {
             InitializeComponent();
             MessageListBox.ItemsSource = chatMessages;
             textblock_chatname.Text = chatname;
-            LoadHistory();
-            Connect();
+            FetchChatHistoryFromApi();
+            ConnectToWebsocket();
             chatMessages.CollectionChanged += ChatMessages_CollectionChanged;
         }
 
-        public async void Connect()
+        public async void ConnectToWebsocket()
         {
-                var stompServerHost = "localhost";
-                var stompServerPort = 8080;
-                var webSocketUrl = $"ws://{stompServerHost}:{stompServerPort}/ws/websocket";
-                _broker = new StompClient(webSocketUrl);
+                var webSocketUrl = $"ws://{MainWindow.BaseUrl}/ws/websocket";
+                _client = new StompClient(webSocketUrl);
                 var headers = new Dictionary<string , string>();
                 headers.Add("Authorization" , "Bearer " + MainWindow.JwtToken);
-            await _broker.ConnectAsync(headers);
-                // Step 2: Subscribe to a destination and handle received messages
-                await _broker.SubscribeAsync<object>($"/topic/{MainWindow.ChatroomId}" , headers , async (sender , dto) =>
+            await _client.ConnectAsync(headers);
+
+                await _client.SubscribeAsync<object>($"/topic/{MainWindow.ChatroomId}" , headers , async (sender , dto) =>
                 {
 
                     AddMessageToDisplay(JsonSerializer.Deserialize<ChatMessage>(dto.ToString()));
                 });
         }
 
-        public async void LoadHistory()
+        public async void FetchChatHistoryFromApi()
         {
             try
             {
@@ -60,7 +58,7 @@ namespace ChatBuddyWPF
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer" , MainWindow.JwtToken);
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                HttpResponseMessage response = await httpClient.GetAsync($"http://localhost:8080/api/info/chat/{MainWindow.ChatroomId}");
+                HttpResponseMessage response = await httpClient.GetAsync($"http://{MainWindow.BaseUrl}/api/info/chat/{MainWindow.ChatroomId}");
 
                 if(!response.IsSuccessStatusCode)
                 {
@@ -110,11 +108,11 @@ namespace ChatBuddyWPF
             if(result == true)
             {
                 string UserToInvite = dialog.UserToInvite;
-                InviteUserToChat(UserToInvite);
+                InviteUserToChatOverApi(UserToInvite);
             }
         }
 
-        private async void InviteUserToChat(string username)
+        private async void InviteUserToChatOverApi(string username)
         {
             try
             {
@@ -126,7 +124,7 @@ namespace ChatBuddyWPF
                 var jsonRequestBody = JsonSerializer.Serialize(requestBody);
                 var httpContent = new StringContent(jsonRequestBody , Encoding.UTF8 , "application/json");
 
-                HttpResponseMessage response = await httpClient.PutAsync("http://localhost:8080/api/info/inviteUser/"+MainWindow.ChatroomId , httpContent);
+                HttpResponseMessage response = await httpClient.PutAsync($"http://{MainWindow.BaseUrl}/api/info/inviteUser/"+MainWindow.ChatroomId , httpContent);
 
                 if(!response.IsSuccessStatusCode)
                 {
@@ -146,7 +144,7 @@ namespace ChatBuddyWPF
 
               this.NavigationService.Navigate(new User());
               MainWindow.ChatroomId = null;
-              _broker.DisconnectAsync();
+              _client.DisconnectAsync();
         }
 
         private async void LeaveChatButton_Click(object sender , RoutedEventArgs e)
@@ -161,7 +159,7 @@ namespace ChatBuddyWPF
                 var jsonRequestBody = JsonSerializer.Serialize(requestBody);
                 var httpContent = new StringContent(jsonRequestBody , Encoding.UTF8 , "application/json");
 
-                HttpResponseMessage response = await httpClient.PutAsync("http://localhost:8080/api/info/leaveChat/"+MainWindow.ChatroomId , httpContent);
+                HttpResponseMessage response = await httpClient.PutAsync($"http://{MainWindow.BaseUrl}/api/info/leaveChat/"+MainWindow.ChatroomId , httpContent);
 
                 if(!response.IsSuccessStatusCode)
                 {
@@ -187,7 +185,7 @@ namespace ChatBuddyWPF
             };
             var headers = new Dictionary<string , string>();
             headers.Add("Authorization" , "Bearer " + MainWindow.JwtToken);
-            _broker.SendAsync(JsonSerializer.Serialize(chatMessage) , $"/app/chat.send/{MainWindow.ChatroomId}" , headers);
+            _client.SendAsync(JsonSerializer.Serialize(chatMessage) , $"/app/chat.send/{MainWindow.ChatroomId}" , headers);
             textbox_send.Text = "";
         }
         public class ChatMessageDisplay

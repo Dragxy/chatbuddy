@@ -45,7 +45,7 @@ namespace ChatBuddyWPF
         private async void UserNameTextBox_TextChanged(object sender , TextChangedEventArgs e)
         {
             string searchText = UserNameTextBox.Text;
-            List<string> suggestions = await GetSuggestionsFromApi(searchText);
+            List<string> suggestions = await FetchSuggestionsFromApi(searchText);
 
             if(suggestions.Count > 0)
             {
@@ -58,12 +58,12 @@ namespace ChatBuddyWPF
             }
         }
 
-        private async Task<List<string>> GetSuggestionsFromApi(string searchText)
+        private async Task<List<string>> FetchSuggestionsFromApi(string searchText)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:8080");
+                client.BaseAddress = new Uri($"http://{ MainWindow.BaseUrl }");
                 string endpoint = "/suggestion";
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer" , MainWindow.JwtToken);

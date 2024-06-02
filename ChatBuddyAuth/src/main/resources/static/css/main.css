@@ -124,7 +124,7 @@ button:hover{
     position: relative;
     height: 100%;
     width: 100%;
-    max-width: 900px; /* Adjust max-width to your preference */
+    max-width: 900px;
     padding: 20px;
 }
 #chat-page .chat-container {
@@ -160,7 +160,6 @@ button:hover{
     line-height: 1.5rem;
     padding: 10px 20px;
     margin: 0;
-    /*border-bottom: 1px solid #f4f4f4;*/
 }
 
 #chat-page ul li p {
@@ -215,7 +214,6 @@ button:hover{
 }
 
 #chat-page .chat-message p {
-    /*color: #43464b;*/
     color:#ffffff;
 }
 
@@ -251,7 +249,7 @@ button:hover{
     top: 65px;
     width: 100%;
 }
-/* update */
+
 li span {
     padding:5px 0;
     border-radius: 5px;
@@ -280,54 +278,6 @@ li span {
     text-transform: uppercase;
 }
 
-
-/* update end  */
-@media screen and (max-width: 730px) {
-
-    .chat-container {
-        margin-left: 10px;
-        margin-right: 10px;
-        margin-top: 10px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .chat-container {
-        height: calc(100% - 30px);
-    }
-
-    .username-page-container {
-        width: auto;
-        margin-left: 15px;
-        margin-right: 15px;
-        padding: 25px;
-    }
-
-    #chat-page ul {
-        height: calc(100% - 120px);
-    }
-
-    #messageForm .input-group button {
-        width: 65px;
-    }
-
-    #messageForm .input-group input {
-        width: calc(100% - 70px);
-    }
-
-    .chat-header {
-        padding: 10px;
-    }
-
-    .connecting {
-        top: 60px;
-    }
-
-    .chat-header h2 {
-        font-size: 1.1em;
-    }
-
-}
 #user-page {
     text-align: center;
     z-index: 10;
@@ -357,7 +307,6 @@ li span {
     height: 400px;
 }
 
-/*NEW*/
 #createChatButton{
     width: 150px;
     height: 40px;
@@ -452,4 +401,51 @@ input {
     outline: none;
     border-radius: 5px;
     display: block;
+}
+
+@media screen and (max-width: 730px) {
+
+    .chat-container {
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .chat-container {
+        height: calc(100% - 30px);
+    }
+
+    .username-page-container {
+        width: auto;
+        margin-left: 15px;
+        margin-right: 15px;
+        padding: 25px;
+    }
+
+    #chat-page ul {
+        height: calc(100% - 120px);
+    }
+
+    #messageForm .input-group button {
+        width: 65px;
+    }
+
+    #messageForm .input-group input {
+        width: calc(100% - 70px);
+    }
+
+    .chat-header {
+        padding: 10px;
+    }
+
+    .connecting {
+        top: 60px;
+    }
+
+    .chat-header h2 {
+        font-size: 1.1em;
+    }
+
 }

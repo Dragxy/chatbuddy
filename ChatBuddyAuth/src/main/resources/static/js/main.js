@@ -50,6 +50,7 @@ function signin(event) {
           if (response.ok) {
             return response.json();
           } else {
+            alert('Access denied. Credentials are invalid.')
             throw new Error('Authentication failed');
           }
         })
@@ -82,6 +83,7 @@ function signup(event) {
         if (response.ok) {
           return response.json();
         } else {
+          alert('Username or Email already exists.')
           throw new Error('Authentication failed');
         }
       })
@@ -131,7 +133,6 @@ function loadChats(){
         });
       })
       .catch(error => {
-
       });
 }
 function loadChat() {
@@ -140,7 +141,7 @@ function loadChat() {
 
   loadHistory();
 
-  var socket = new SockJS("/ws"); // WebSocket connection URL
+  var socket = new SockJS("/ws");
   stompClient = Stomp.over(socket);
   var headers = {
     "Authorization": "Bearer " + localStorage.getItem("jwtToken")
@@ -261,9 +262,7 @@ function loadHistory(){
             var usernameText = document.createTextNode(message.username);
             usernameElement.appendChild(usernameText);
             messageElement.appendChild(usernameElement);
-            // * update
             usernameElement.style["color"] = getAvatarColor(message.username);
-            //* update end
           }
 
           var textElement = document.createElement("p");
@@ -271,11 +270,10 @@ function loadHistory(){
           textElement.appendChild(messageText);
 
           messageElement.appendChild(textElement);
-          // * update
           if (message.username === username) {
             // Add a class to float the message to the right
             messageElement.classList.add("own-message");
-          } // * update end
+          }
           messageArea.appendChild(messageElement);
           messageArea.scrollTop = messageArea.scrollHeight;
         })
@@ -342,9 +340,7 @@ function onMessageReceived(payload) {
     usernameElement.appendChild(usernameText);
     messageElement.appendChild(avatarElement);
     messageElement.appendChild(usernameElement);
-    // * update
     usernameElement.style["color"] = getAvatarColor(message.username);
-    //* update end
   }
 
   var textElement = document.createElement("p");
@@ -352,7 +348,6 @@ function onMessageReceived(payload) {
   textElement.appendChild(messageText);
 
 
-  // * update
   if (message.username === username) {
     // Add a class to float the message to the right
     messageElement.classList.add("own-message");
@@ -467,6 +462,5 @@ document.addEventListener('DOMContentLoaded', () => {
     userPage.classList.remove("hidden");
     leaveChat(username)
     chatroomId=null
-
   });
 });

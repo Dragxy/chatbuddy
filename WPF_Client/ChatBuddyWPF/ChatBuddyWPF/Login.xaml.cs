@@ -18,9 +18,6 @@ using System.Windows.Shapes;
 
 namespace ChatBuddyWPF
 {
-    /// <summary>
-    /// Interaktionslogik für Login.xaml
-    /// </summary>
     public partial class Login : Page
     {
         public Login()
@@ -73,7 +70,7 @@ namespace ChatBuddyWPF
                     string json = JsonSerializer.Serialize(requestData);
                     HttpContent content = new StringContent(json , Encoding.UTF8 , "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("http://localhost:8080/api/auth/signin" , content);
+                    HttpResponseMessage response = await client.PostAsync($"http://{MainWindow.BaseUrl}/api/auth/signin" , content);
 
                     if(response.IsSuccessStatusCode)
                     {

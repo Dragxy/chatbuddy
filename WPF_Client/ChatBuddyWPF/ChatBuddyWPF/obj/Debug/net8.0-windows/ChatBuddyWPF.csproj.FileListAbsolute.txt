@@ -37,6 +37,6 @@ C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\bin\Debug\net8.0-window
 C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\bin\Debug\net8.0-windows\System.Reactive.dll
 C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\bin\Debug\net8.0-windows\System.Reactive.xml
 C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\obj\Debug\net8.0-windows\ChatBuddyWPF.csproj.AssemblyReference.cache
-C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\obj\Debug\net8.0-windows\ChatBudd.6D675D8C.Up2Date
 C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\obj\Debug\net8.0-windows\InviteUser.g.cs
 C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\obj\Debug\net8.0-windows\InviteUser.baml
+C:\GitHub\chatbuddy\WPF_Client\ChatBuddyWPF\ChatBuddyWPF\obj\Debug\net8.0-windows\ChatBuddyWPF.csproj.CopyComplete

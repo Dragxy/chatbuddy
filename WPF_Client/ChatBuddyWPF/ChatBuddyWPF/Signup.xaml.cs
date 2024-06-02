@@ -74,7 +74,7 @@ namespace ChatBuddyWPF
                     string json = JsonSerializer.Serialize(requestData);
                     HttpContent content = new StringContent(json , Encoding.UTF8 , "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("http://localhost:8080/api/auth/signup" , content);
+                    HttpResponseMessage response = await client.PostAsync($"http://{MainWindow.BaseUrl}/api/auth/signup" , content);
 
                     if(response.IsSuccessStatusCode)
                     {

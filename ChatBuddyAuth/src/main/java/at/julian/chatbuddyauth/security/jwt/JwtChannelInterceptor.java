@@ -21,7 +21,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         if (isDisconnectMessage(message)) {
-            System.out.println("Client disconnected");
+            //System.out.println("Client disconnected");
             return null;
         }
         String jwtToken = extractJwtToken(message);

@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
-namespace ChatBuddyWPF
-{
+namespace ChatBuddyWPF {
     public partial class User : Page
     {
 
         public User()
         {
             InitializeComponent();
-            LoadChatsAsync();
+            FetchUserFromApi();
         }
 
-        private async void LoadChatsAsync()
+        private async void FetchUserFromApi()
         {
             try
             {
@@ -31,7 +25,7 @@ namespace ChatBuddyWPF
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer" , MainWindow.JwtToken);
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                HttpResponseMessage response = await httpClient.GetAsync($"http://localhost:8080/api/info/user/{MainWindow.Username}");
+                HttpResponseMessage response = await httpClient.GetAsync($"http://{MainWindow.BaseUrl}/api/info/user/{MainWindow.Username}");
 
                 if(!response.IsSuccessStatusCode)
                 {
@@ -48,7 +42,7 @@ namespace ChatBuddyWPF
                 MessageBox.Show($"Error: {ex.Message}");
             }
         }
-        private async void CreateChatAsync(string chatName)
+        private async void CreateNewChatOverApi(string chatName)
         {
             try
             {
@@ -60,7 +54,7 @@ namespace ChatBuddyWPF
                 var jsonRequestBody = JsonSerializer.Serialize(requestBody);
                 var httpContent = new StringContent(jsonRequestBody , Encoding.UTF8 , "application/json");
 
-                HttpResponseMessage response = await httpClient.PostAsync("http://localhost:8080/api/info/chats/add" , httpContent);
+                HttpResponseMessage response = await httpClient.PostAsync($"http://{MainWindow.BaseUrl}/api/info/chats/add" , httpContent);
 
                 if(!response.IsSuccessStatusCode)
                 {
@@ -68,7 +62,7 @@ namespace ChatBuddyWPF
                 }
 
                 string responseBody = await response.Content.ReadAsStringAsync();
-                LoadChatsAsync();
+                FetchUserFromApi();
             }
             catch(Exception ex)
             {
@@ -81,11 +75,11 @@ namespace ChatBuddyWPF
             ButtonContainer.Children.Clear();
             foreach(var chatroom in chatrooms)
             {
-                CreateChatButton(chatroom);
+                GenerateButtonsGui(chatroom);
             }
         }
 
-        private void CreateChatButton(Chatroom chatroom)
+        private void GenerateButtonsGui(Chatroom chatroom)
         {
             Button button = new Button
             {
@@ -96,11 +90,11 @@ namespace ChatBuddyWPF
                 Style = (Style)Application.Current.Resources["CustomButtonStyle"]
             };
 
-            button.Click += (sender , e) => Button_Click(sender , e , chatroom);
+            button.Click += (sender , e) => SpecificChatroomButton_Click(sender , e , chatroom);
             ButtonContainer.Children.Add(button);
         }
 
-        private void Button_Click(object sender , RoutedEventArgs e , Chatroom chatroom)
+        private void SpecificChatroomButton_Click(object sender , RoutedEventArgs e , Chatroom chatroom)
         {
             MainWindow.ChatroomId = chatroom.Id;
             this.NavigationService.Navigate(new ChatPage(chatroom.Name));
@@ -113,7 +107,7 @@ namespace ChatBuddyWPF
             if(result == true)
             {
                 string chatName = dialog.ChatName;
-                CreateChatAsync(chatName);
+                CreateNewChatOverApi(chatName);
             }
         }
     }

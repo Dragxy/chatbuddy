@@ -13,12 +13,14 @@ namespace ChatBuddyWPF
 {
     public partial class MainWindow : Window
     {
+        public static string BaseUrl { get; private set; }
         public static string JwtToken {  get; set; }
         public static string Username {  get; set; }
         public static string ChatroomId { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            BaseUrl = "localhost:8080";
             MainFrame.Navigate(new Login());
         }
     }
