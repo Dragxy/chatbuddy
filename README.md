@@ -573,7 +573,7 @@ To invite/add another user to a selected chatroom the clients sends an Api reque
 # Troubleshooting
 ## Common Issues
 ### ChatBuddy does not create database structure?
-ChatBuddy should on its first start automatically create the database structure consisting of the database `chatbuddy`, and the collection `roles`, `chatrooms` (including the `global` chat). If this is not the case, ChatBuddy might not have the needed permissions or can not access the MongoDB-Server. Doublecheck the Mongo-Connectionstring and if ChatBuddy has all the necessary permissions of the os.
+ChatBuddy should on its first start automatically create the database structure consisting of the database `chatbuddy`, and the collection `roles`, `chatrooms` (including the `global` chat). If this is not the case, ChatBuddy might not have the needed permissions or can not access the MongoDB-Server. Doublecheck the Mongo-Connectionstring and if ChatBuddy has all the necessary permissions from the os.
 ### ChatBuddy immediatly crashes on start?
 If ChatBuddy immediatly crashes on start, look in the console and the logs. There might be a missing packages or dependency or a different JDK installed, in which case these must be installed accordingly. (It can also help, to just Reload the Maven project.)
 If there is still in issue, check the ports again. Another service might already run on that port, preventing ChatBuddy from starting. The default ChatBuddy port is: `8080` and the default MongoDB-Server port is `27017`.
