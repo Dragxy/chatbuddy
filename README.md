@@ -509,8 +509,77 @@ end
   ```
 On selection of a chat the client tries to establish a websocket connection to the server. While this connection persists each message sent from the client is checked for its authorization, saved to the database and then sent to the broker which forwards it to all online users in the chat. (At the same time the user user listens for messages from the broker sent from other users)
 
-  
 
+## InviteUser
+
+```mermaid
+
+sequenceDiagram
+
+autonumber
+
+Client->>Server: Request UserInvite
+
+Server->>Server: Check JWT-Token
+
+alt is valid
+
+Server->>Server: Check if User exists (Make DB call)
+alt exists
+Server->>Server: Check if User is not already in chat (Make DB call)
+alt is not
+Server->>Server: inviteUserToChat (Make DB call)
+
+Server->>Client: return SuccessMessage
+Server->>Client: send JoinMessage to all chats(from Broker)
+else is
+Server->>Client: return FailureMessage (User already in Chat)
+end
+
+else doesn not exist
+Server->>Client: return FailureMessage (User does not exist)
+end
+
+else is unvalid
+Server->>Client: return Unauthorized Error
+end
+
+```
+`/api/info/inviteUser/{chatroomId}` [PUT]
+
+##### Headers:
+  ```json
+{
+	"Content-Type": "application/json",
+	"Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUeXJpb24gTGFubmlzdGVyIiwiaWF0IjoxNzE3MzY3NTI1LCJleHAiOjE3MTc0NTM5MjV9.DfpmmSf_OEdtCLblREy11I_fdcdJtYOxNWrYmaA7PYs"
+}
+  ```
+
+##### Body:
+  ```json
+{
+    "Username": "Jon Snow"
+}
+  ```
+##### Return Value:
+  ```json
+{
+    "User was successfully added to chatroom!"
+}
+  ```
+To invite/add another user to a selected chatroom the clients sends an Api request to the Infocontroller. It requires the Authorizationtoken as a header, the username of the user that is the target if the invitation in the body and the chatroomId of the chatroom that the user is invited to in the url. It returns a simple Message that informs on the success of the action. Furthermore the Server automatically sends an event message to all users in the chat, that the new user has joined.
+
+  
+# Troubleshooting
+## Common Issues
+### ChatBuddy does not create database structure?
+ChatBuddy should on its first start automatically create the database structure consisting of the database `chatbuddy`, and the collection `roles`, `chatrooms` (including the `global` chat). If this is not the case, ChatBuddy might not have the needed permissions or can not access the MongoDB-Server. Doublecheck the Mongo-Connectionstring and if ChatBuddy has all the necessary permissions of the os.
+### ChatBuddy immediatly crashes on start?
+If ChatBuddy immediatly crashes on start, look in the console and the logs. There might be a missing packages or dependency or a different JDK installed, in which case these must be installed accordingly. (It can also help, to just Reload the Maven project.)
+If there is still in issue, check the ports again. Another service might already run on that port, preventing ChatBuddy from starting. The default ChatBuddy port is: `8080` and the default MongoDB-Server port is `27017`.
+### WebClient fails to send requests to Server?
+If the WebClient repeatedly fails to make requests to the server and is not able to establish a connection, please validate, that the url or the ip of the server is correct, and the HTTP protocol is not blocked by any security measures such as a firewall.
+If it still does not work, try clearing the browser chache. This should fix all issues.
 # Notes from Developer
 ## During Development
 During development, many changes and different ideas were experimented with. Initially, Kafka was tried, but that idea was scrapped as the project did not need to be scaled to that extent, and it would have required unnecessary research. Therefore, it defaulted back to a simple WebSocket broker of Spring Boot. Furthermore, if there had been more time, an Angular web server would have been implemented instead of the basic HTML/CSS one. Despite the limited timeframe and resources, the development process was a valuable learning experience. The most important features were successfully implemented, and the application has a solid foundation to be built upon. Future improvements could include enhancing the user interface, adding more advanced features, and optimizing performance to handle a larger user base. The project demonstrates the potential of combining different technologies to create a functional and efficient chat application.
