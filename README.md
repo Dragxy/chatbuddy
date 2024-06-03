@@ -139,6 +139,21 @@ The user is also able to invite/add other user to the channel. By pressing the a
 
 This part of the documentation will go further into the actual implementation of ChatBuddy.
 
+## Detailed Overview
+<img  src="./markdown_docu_images/Graph1.PNG"></img>
+Here would be a more detailed overview of the structure of ChatBuddy and its endpoints and communication. Note that Both the `MongoDB-Server`(Green) and the `Backend-Server` (Yellow) are run on the server device.
+
+In Green we see the `MongoDB-Server` and database which is run on port `27017`, and communicates/is accessed by both the REST-Api and the send-chat Endpoint of the websocket.
+
+In Yellow we see the `REST-Api` and all its endpoints. The Auth-Endpoints are used for both the login and signup procedure and therefore are the only two endpoints that can be accessed without an **Access-Token** (JWT-Token). The info-endpoints are simply used to retrieve user and chat information to visualize to the client or invite/leave certain chats. Authorization is needed. The last endpoint the suggestion-endpoint is used for the invite-feature and can be used to retrieve suggestions for usernames based on the input string of the client.
+
+In Red we see the `WebSocket`, consisting of the endpoint `/chat.send/` and the Broker. To send a message in a chat the client must access the endpoint, which again requires authorization in form of the JWT-Token. The endpoint then saves the message to the database and forwards it to the Broker, which broadcasts the message to **all** online users in the chat.
+
+In Orange we see the `Web-Server`, which is integrated in the Spring-Boot application. It hosts the Website and enables all users to use ChatBuddy through their browser.
+
+In Blue we can see the `Clients`. Both the WPF-Client and the Browser-Client work in the exact same way, except the difference, that the Browser-Client has to access the WebServer first to retrieve the WebApp and the WPF already runs locally on the users device anyway. They can request data from the REST-Api, post their own, or start sending and receiving chat messages through the Websocket-Connection.
+
+Now follows a more thorough description of the components as well as sequence diagrams to describe the most important procedures of Chatbuddy.
 ## Frontend
 
 The frontend of ChatBuddy has 2 variations which provide the same features.
